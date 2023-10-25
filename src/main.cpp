@@ -2,8 +2,8 @@
 #include <AntaresESP32MQTT.h>
 #include <DHTesp.h>
 
-#define SSID "AHDA 4434"
-#define PASS "Ahda@hotspot"
+#define SSID "MBC-Lab 2.4G"
+#define PASS "gogombc123"
 #define mqtt_server "mqtt.antares.id" // Using antares mqtt broker
 
 #define ACCESSKEY "5857af4ec372ee95:d546da27532c4a59" // Antares account access key
