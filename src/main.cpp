@@ -12,7 +12,7 @@
 #define projectName "tracker"                         // Name of the application created in Antares
 #define deviceName "esp32"                            // Name of the device created in Antares
 
-const int dht = 13;
+const int dht = 13; // Pin on ESP32
 
 DHTesp dhtsensor;
 AntaresESPMQTT antares(ACCESSKEY);
