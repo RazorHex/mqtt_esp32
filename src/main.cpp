@@ -1,11 +1,9 @@
 #include <Arduino.h>
-#include <PubSubClient.h>
-#include <WiFi.h>
-#include <AntaresESPMQTT.h>
+#include <AntaresESP32MQTT.h>
 #include <DHTesp.h>
 
-#define SSID "MBC-Lab 2.4G"
-#define PASS "gogombc123"
+#define SSID "AHDA 4434"
+#define PASS "Ahda@hotspot"
 #define mqtt_server "mqtt.antares.id" // Using antares mqtt broker
 
 #define ACCESSKEY "5857af4ec372ee95:d546da27532c4a59" // Antares account access key
@@ -15,29 +13,27 @@
 const int dht = 13; // Pin on ESP32
 
 DHTesp dhtsensor;
-AntaresESPMQTT antares(ACCESSKEY);
+AntaresESP32MQTT antares(ACCESSKEY);
 
 void publish()
 {
   Serial.println("\n====");
-  int temp = random(25, 30);
-  int hum = random(75, 90);
+  Serial.println("[Antares] Publishing.");
+  int temp = random(25, 30); // Testing purpose only
+  int hum = random(75, 90);  // Testing purpose only
 
   TempAndHumidity data = dhtsensor.getTempAndHumidity();
+
+  Serial.print("[Antares] Temperature : ");
+  Serial.println(data.temperature);
+  Serial.print("[Antares] Humidity    : ");
+  Serial.println(data.humidity);
 
   antares.add("temperature", data.temperature);
   antares.add("humidity", data.humidity);
   antares.publish(projectName, deviceName);
   Serial.println("=== Published ===\n");
-}
-
-void callback(char topic[], byte payload[], unsigned int length)
-{
-  Serial.println("\n=====");
-  antares.get(topic, payload, length);
-
-  Serial.println(antares.getTopic());
-  Serial.println("Payload: " + antares.getPayload());
+  delay(500);
 }
 
 void setup()
@@ -49,21 +45,23 @@ void setup()
   dhtsensor.setup(dht, DHTesp::DHT22);
   Serial.println("\n[DHT-22] Done.");
 
-  antares.setDebug(true);
+  /*
+    setDebug function is broken and to use the debug function you need to change the code inside
+      .pio\libdeps\esp32dev\Antares ESP32 MQTT\src\AntaresESP32MQTT.cpp
+    on line 208 and add the following return statement
+
+    "return trueFalse;"
+  */
+  antares.setDebug(true); // Currently broken because of antares repo
   antares.wifiConnection(SSID, PASS);
   antares.setMqttServer();
-  antares.setCallback(callback);
 }
 
 void loop()
 {
-
-  Serial.println("Checking connection...");
   antares.checkMqttConnection();
 
   publish();
 
-  delay(500);
-  antares.retrieveLastData(projectName, deviceName);
-  delay(10000);
+  delay(2000);
 }
